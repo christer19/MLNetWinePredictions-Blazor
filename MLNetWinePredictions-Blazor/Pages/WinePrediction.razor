@@ -1,0 +1,13 @@
+﻿@page "/wine"
+
+@using System.Net.Http
+@inject HttpClient _http
+
+<h3>WinePrediction</h3>
+
+@code {      
+    protected override async Task OnInitializedAsync()
+    {
+        var data = await _http.PostAsync("", null, new System.Threading.CancellationToken());
+    }
+}
