@@ -1,13 +1,119 @@
 ﻿@page "/wine"
 
-@using System.Net.Http
-@inject HttpClient _http
+@using MLNetWinePredictions_Blazor.Data
+@using MLNetWinePredictions_Blazor.Models
 
-<h3>WinePrediction</h3>
+@inject PredictionService _predictionService
 
-@code {      
-    protected override async Task OnInitializedAsync()
+<h3>Wine Prediction</h3>
+
+@if (hasPrediction)
+{
+    <div>Prediction is @_wineQuality</div>
+
+    <button type="reset" @onclick="ResetPrediction">Make Another Prediction</button>
+}
+else
+{
+    <EditForm Model="@_wineModel" OnValidSubmit="PredictWine">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <p>
+            <label>
+                Wine Type:
+                <InputSelect @bind-Value="_wineModel.Type">
+                    <option value="">Select Wine Type..</option>
+                    <option value="Red">Red</option>
+                    <option value="White">White</option>
+                </InputSelect>
+            </label>
+        </p>
+        <p>
+            <label>
+                Fixed acidity:
+                <InputNumber @bind-Value="_wineModel.FixedAcidity" />
+            </label>
+        </p>
+        <p>
+            <label>
+                Volatile acidity:
+                <InputNumber @bind-Value="_wineModel.VolatileAcidity" />
+            </label>
+        </p>
+        <p>
+            <label>
+                Citric acid:
+                <InputNumber @bind-Value="_wineModel.CitricAcid" />
+            </label>
+        </p>
+        <p>
+            <label>
+                Residual sugar:
+                <InputNumber @bind-Value="_wineModel.ResidualSugar" />
+            </label>
+        </p>
+        <p>
+            <label>
+                Chlorides:
+                <InputNumber @bind-Value="_wineModel.Chlorides" />
+            </label>
+        </p>
+        <p>
+            <label>
+                Free sulfer dioxide:
+                <InputNumber @bind-Value="_wineModel.FreeSulfurDioxide" />
+            </label>
+        </p>
+        <p>
+            <label>
+                Total sulfur dioxide:
+                <InputNumber @bind-Value="_wineModel.TotalSulfurDioxide" />
+            </label>
+        </p>
+        <p>
+            <label>
+                Density:
+                <InputNumber @bind-Value="_wineModel.Density" />
+            </label>
+        </p>
+        <p>
+            <label>
+                Ph:
+                <InputNumber @bind-Value="_wineModel.Ph" />
+            </label>
+        </p>
+        <p>
+            <label>
+                Sulphates:
+                <InputNumber @bind-Value="_wineModel.Sulphates" />
+            </label>
+        </p>
+        <p>
+            <label>
+                Alcohol:
+                <InputNumber @bind-Value="_wineModel.Alcohol" />
+            </label>
+        </p>
+
+        <button type="submit" class="btn btn-primary">Predict</button>
+    </EditForm>
+}
+
+@code {
+    private WineModel _wineModel = new WineModel();
+    private float _wineQuality = 0f;
+    private bool hasPrediction = false;
+
+    protected async Task PredictWine()
     {
-        var data = await _http.PostAsync("", null, new System.Threading.CancellationToken());
+        _wineQuality = await _predictionService.GetWinePrediction(_wineModel);
+
+        hasPrediction = true;
+    }
+
+    protected void ResetPrediction()
+    {
+        hasPrediction = false;
     }
 }
